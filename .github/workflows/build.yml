@@ -3,7 +3,23 @@ on: [push, pull_request, workflow_dispatch]
 
 jobs:
   build:
-    uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@main
-    with:
-        submodules: recursive
-      
+    runs-on: ubuntu-latest
+    steps:
+      - name: Checkout repository
+        uses: actions/checkout@v4
+        with:
+          submodules: recursive  # Загружаем все подмодули (включая nice-oled)
+
+      - name: Initialize West and Update
+        run: |
+          pip3 install west
+          west init -l config
+          west update
+          west zephyr-export
+          west build -s zmk/app -b nice_nano_v2 -- -DZMK_CONFIG=`pwd`/config
+
+      - name: Upload firmware
+        uses: actions/upload-artifact@v3
+        with:
+          name: firmware
+          path: firmware/
