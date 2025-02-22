@@ -5,4 +5,5 @@ jobs:
   build:
     uses: zmkfirmware/zmk/.github/workflows/build-user-config.yml@main
     with:
-      checkout_submodules: true
+        submodules: recursive
+      
